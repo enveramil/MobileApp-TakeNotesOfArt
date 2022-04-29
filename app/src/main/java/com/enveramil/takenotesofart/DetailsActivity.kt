@@ -17,6 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.enveramil.takenotesofart.databinding.ActivityDetailsBinding
 import com.google.android.material.snackbar.Snackbar
+import java.io.ByteArrayOutputStream
 import java.lang.Exception
 import java.util.jar.Manifest
 
@@ -56,7 +57,62 @@ class DetailsActivity : AppCompatActivity() {
         }
     }
 
-    fun save(view: View){}
+    /**
+     * Veritabanına görseli kaydetmeden önce resmi küçültme işlemi yapmamız gerekmektedir.
+     */
+    fun save(view: View){
+
+        var imageName = binding.imageName.text.toString()
+        var imageOwner = binding.imageOwner.text.toString()
+        var imageYear = binding.imageYear.text.toString()
+
+        if (selectedBitmap != null){
+            val getSmallerBitmap = makeSmallerBitmap(selectedBitmap!!,300)
+
+            var outputStream = ByteArrayOutputStream()
+            getSmallerBitmap.compress(Bitmap.CompressFormat.PNG,50,outputStream)
+            var byteArray = outputStream.toByteArray()
+
+            try {
+                val database = this.openOrCreateDatabase("TakeNotes", MODE_PRIVATE,null)
+                database.execSQL("CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY, imageName VARCHAR, imageOwner VARCHAR, imageYear VARCHAR, image BLOB)")
+                val sqlString = "INSERT INTO notes (imageName, imageOwner, imageYear,image) VALUES (?,?,?,?)"
+                val statement = database.compileStatement(sqlString)
+                statement.bindString(1,imageName)
+                statement.bindString(2,imageOwner)
+                statement.bindString(3,imageYear)
+                statement.bindString(4, byteArray.toString())
+                statement.execute()
+            }catch (e : Exception){
+                e.printStackTrace()
+            }
+
+            // Arka planda ne kadar aktivite varsa temizlenir ve istenilen yere gider
+            val intent = Intent(this@DetailsActivity, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
+        }
+    }
+
+    private fun makeSmallerBitmap(image : Bitmap, maximumSize : Int) : Bitmap{
+        var width = image.width
+        var height = image.height
+
+        val bitmapRatio : Double = width.toDouble() / height.toDouble()
+        if (bitmapRatio > 1){
+            // landscape
+            width = maximumSize
+            val scaledHeight = width / bitmapRatio
+            height = scaledHeight.toInt()
+        }else {
+            // portrait
+            height = maximumSize
+            val scaledHeight = height * bitmapRatio
+            width = scaledHeight.toInt()
+        }
+
+        return Bitmap.createScaledBitmap(image,width,height,true)
+    }
 
     private fun registerLaunchers(){
         // Launcher for go to gallery and select the image
