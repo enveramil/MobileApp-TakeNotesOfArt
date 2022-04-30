@@ -1,7 +1,5 @@
 package com.enveramil.takenotesofart
 
-<<<<<<< HEAD
-=======
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.sqlite.SQLiteDatabase
@@ -9,25 +7,20 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.os.Build
->>>>>>> feat
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
-<<<<<<< HEAD
 import com.enveramil.takenotesofart.databinding.ActivityDetailsBinding
-=======
+
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.enveramil.takenotesofart.databinding.ActivityDetailsBinding
 import com.google.android.material.snackbar.Snackbar
 import java.io.ByteArrayOutputStream
 import java.lang.Exception
-import java.util.jar.Manifest
->>>>>>> feat
 
 /**
  * ActivityResultLauncher : Geriye dönecek veriye göre işlem yapmaktadır.
@@ -85,9 +78,6 @@ class DetailsActivity : AppCompatActivity() {
 
         }
     }
-<<<<<<< HEAD
-    fun selectImage(view: View){}
-=======
     fun selectImage(view: View){
         if (ContextCompat.checkSelfPermission(this,android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
             // izin verilmediğindeki durumu kontrol ediyoruz.
@@ -102,11 +92,10 @@ class DetailsActivity : AppCompatActivity() {
             }
         }else{
             // izin verildiği zamanki durumu kontrol ediyoruz.
-            val intentToGallery = Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            val intentToGallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             activityResultLauncher.launch(intentToGallery)
         }
     }
->>>>>>> feat
 
     /**
      * Veritabanına görseli kaydetmeden önce resmi küçültme işlemi yapmamız gerekmektedir.
