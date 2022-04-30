@@ -2,7 +2,9 @@ package com.enveramil.takenotesofart
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +27,7 @@ import java.util.jar.Manifest
  * ActivityResultLauncher : Geriye dönecek veriye göre işlem yapmaktadır.
  */
 class DetailsActivity : AppCompatActivity() {
+    private lateinit var database : SQLiteDatabase
     private lateinit var binding : ActivityDetailsBinding
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
@@ -35,8 +38,46 @@ class DetailsActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
         // Register Launcher
-
+        database = this.openOrCreateDatabase("TakeNotes", MODE_PRIVATE,null)
         registerLaunchers()
+
+        val intent = intent
+        val info = intent.getStringExtra("info")
+
+        if (info.equals("new")){
+            binding.imageName.setText("")
+            binding.imageOwner.setText("")
+            binding.imageYear.setText("")
+            binding.button.visibility = View.VISIBLE
+            binding.imageView.setImageResource(R.drawable.select)
+
+        }else{
+            // old
+
+            binding.button.visibility = View.INVISIBLE
+            binding.imageView.isClickable = false
+            val selectedId = intent.getIntExtra("id",1)
+            val cursor = database.rawQuery("SELECT * FROM notes WHERE id = ?", arrayOf(selectedId.toString()))
+
+            val nameIndex = cursor.getColumnIndex("imageName")
+            val imageOwnerIndex = cursor.getColumnIndex("imageOwner")
+            val imageYearIndex = cursor.getColumnIndex("imageYear")
+            val imageIndex = cursor.getColumnIndex("image")
+
+            while (cursor.moveToNext()){
+
+                binding.imageName.setText(cursor.getString(nameIndex))
+                binding.imageOwner.setText(cursor.getString(imageOwnerIndex))
+                binding.imageYear.setText(cursor.getString(imageYearIndex))
+
+                val byteArray = cursor.getBlob(imageIndex)
+                val returnBitmap = BitmapFactory.decodeByteArray(byteArray,0,byteArray.size)
+                binding.imageView.setImageBitmap(returnBitmap)
+
+            }
+            cursor.close()
+
+        }
     }
     fun selectImage(view: View){
         if (ContextCompat.checkSelfPermission(this,android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
@@ -60,7 +101,7 @@ class DetailsActivity : AppCompatActivity() {
     /**
      * Veritabanına görseli kaydetmeden önce resmi küçültme işlemi yapmamız gerekmektedir.
      */
-    fun save(view: View){
+    fun save(view : View){
 
         var imageName = binding.imageName.text.toString()
         var imageOwner = binding.imageOwner.text.toString()
@@ -69,19 +110,19 @@ class DetailsActivity : AppCompatActivity() {
         if (selectedBitmap != null){
             val getSmallerBitmap = makeSmallerBitmap(selectedBitmap!!,300)
 
-            var outputStream = ByteArrayOutputStream()
+            val outputStream = ByteArrayOutputStream()
             getSmallerBitmap.compress(Bitmap.CompressFormat.PNG,50,outputStream)
-            var byteArray = outputStream.toByteArray()
+            val byteArray = outputStream.toByteArray()
 
             try {
-                val database = this.openOrCreateDatabase("TakeNotes", MODE_PRIVATE,null)
+                //val database = this.openOrCreateDatabase("TakeNotes", MODE_PRIVATE,null)
                 database.execSQL("CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY, imageName VARCHAR, imageOwner VARCHAR, imageYear VARCHAR, image BLOB)")
                 val sqlString = "INSERT INTO notes (imageName, imageOwner, imageYear,image) VALUES (?,?,?,?)"
                 val statement = database.compileStatement(sqlString)
                 statement.bindString(1,imageName)
                 statement.bindString(2,imageOwner)
                 statement.bindString(3,imageYear)
-                statement.bindString(4, byteArray.toString())
+                statement.bindBlob(4, byteArray)
                 statement.execute()
             }catch (e : Exception){
                 e.printStackTrace()
@@ -89,7 +130,7 @@ class DetailsActivity : AppCompatActivity() {
 
             // Arka planda ne kadar aktivite varsa temizlenir ve istenilen yere gider
             val intent = Intent(this@DetailsActivity, MainActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)
         }
     }
