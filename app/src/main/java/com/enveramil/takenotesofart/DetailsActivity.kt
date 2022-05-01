@@ -55,6 +55,9 @@ class DetailsActivity : AppCompatActivity() {
 
             binding.button.visibility = View.INVISIBLE
             binding.imageView.isClickable = false
+            binding.imageName.isEnabled = false
+            binding.imageOwner.isEnabled = false
+            binding.imageYear.isEnabled = false
             val selectedId = intent.getIntExtra("id",1)
             val cursor = database.rawQuery("SELECT * FROM notes WHERE id = ?", arrayOf(selectedId.toString()))
 

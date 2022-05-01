@@ -1,14 +1,20 @@
 package com.enveramil.takenotesofart
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.ActionBar
+import androidx.core.view.size
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.enveramil.takenotesofart.databinding.ActivityMainBinding
+import com.google.android.material.badge.BadgeDrawable
 import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
@@ -22,12 +28,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
         noteList = ArrayList<NotesModel>()
         getDataFromDatabase()
+        binding.navBottomBar.showBadge(R.id.home,100)
+        binding.navBottomBar.showBadge(R.id.user,10)
 
     }
 
     private fun getDataFromDatabase(){
         notesAdapter = NoteAdapter(noteList)
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.layoutManager = GridLayoutManager(this,2)
         binding.recyclerView.adapter = notesAdapter
 
         try {
@@ -51,6 +59,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        
         val menuInflater = getMenuInflater()
         menuInflater.inflate(R.menu.menu,menu)
         return super.onCreateOptionsMenu(menu)

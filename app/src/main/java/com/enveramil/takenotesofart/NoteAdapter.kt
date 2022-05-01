@@ -17,7 +17,7 @@ class NoteAdapter(val noteList : ArrayList<NotesModel>) : RecyclerView.Adapter<N
 
     override fun onBindViewHolder(holder: NoteHolder, position: Int) {
         holder.binding.recyclerRowTextView.text = noteList.get(position).name
-        holder.itemView.setOnClickListener {
+        holder.binding.cardView.setOnClickListener {
             val intent = Intent(holder.itemView.context,DetailsActivity::class.java)
             intent.putExtra("info","old") // kayıtlı sanat eserini gösterir.
             intent.putExtra("id",noteList.get(position).id)

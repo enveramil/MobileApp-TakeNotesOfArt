@@ -3,9 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Enver/Desktop/kotlin/TakeNotesOfArt/app/src/main/res/drawable/shadow.xml" value="0.2703125" />
         <entry key="..\:/Users/Enver/Desktop/kotlin/TakeNotesOfArt/app/src/main/res/layout/activity_details.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Enver/Desktop/kotlin/TakeNotesOfArt/app/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Enver/Desktop/kotlin/TakeNotesOfArt/app/src/main/res/layout/recycler_row.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Enver/Desktop/kotlin/TakeNotesOfArt/app/src/main/res/menu/bottom_nav_bar.xml" value="0.1" />
         <entry key="..\:/Users/Enver/Desktop/kotlin/TakeNotesOfArt/app/src/main/res/menu/menu.xml" value="0.25416666666666665" />
       </map>
     </option>
